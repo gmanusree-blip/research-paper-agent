@@ -1,0 +1,96 @@
+{
+  "app": "Research Paper Assistant",
+  "exportedAt": "2026-11-02T14:17:42.517Z",
+  "metadata": {
+    "title": "Attention Is All You Need",
+    "authors": [
+      "Ashish Vaswani",
+      "Noam Shazeer",
+      "Niki Parmar",
+      "Jakob Uszkoreit",
+      "Llion Jones",
+      "Aidan N. Gomez",
+      "Łukasz Kaiser",
+      "Illia Polosukhin"
+    ],
+    "venue": "NeurIPS 2017",
+    "year": "2017",
+    "citationCount": "130,000+ (Google Scholar)"
+  },
+  "coreConcepts": {
+    "problemAddressed": "Traditional sequence models (RNNs, LSTMs, GRUs) process tokens sequentially one by one. This serial computation creates an O(N) dependency bottleneck that prevents parallel training across GPUs and struggles to capture long-range contextual relationships due to vanishing gradients.",
+    "methodology": "The authors discarded recurrence and convolution completely, introducing the Transformer: an encoder-decoder network based exclusively on multi-head scaled dot-product self-attention paired with sinusoidal positional encodings and position-wise feed-forward networks.",
+    "contributions": [
+      "Scaled Dot-Product Attention mechanism computing attention weights in parallel via matrix multiplication.",
+      "Multi-Head Attention allowing the model to jointly attend to information from different representation subspaces.",
+      "Sinusoidal Positional Encoding enabling the model to inject word order information without recurrent step-by-step state passing.",
+      "Fully parallelizable training architecture drastically reducing training time from weeks to days."
+    ],
+    "resultsAndConclusions": "Achieved state-of-the-art BLEU scores of 28.4 on WMT 2014 English-to-German and 41.8 on English-to-French with only 3.5 days of training on 8 GPUs, vastly outperforming existing recurrent and convolutional architectures at a fraction of training cost.",
+    "undergraduateSummary": "Before this paper, AI processed sentences like reading a tape one word at a time using Recurrent Neural Networks (RNNs). If a sentence had 50 words, word 50 had to wait for word 49, making GPU parallelism impossible and forgetting early words.\n\nVaswani and colleagues introduced the Transformer, which looks at every word in a sentence simultaneously. Using \"Self-Attention\", each word asks: \"Which other words in this sentence matter to me?\" (for example, linking the pronoun \"it\" to \"the robot\"). Because all words are evaluated simultaneously via matrix operations, training is massively parallelized on GPUs.\n\nBy layering Multi-Head Attention, residual skip connections, and Feed-Forward Networks, Transformers learned richer context while training in days instead of weeks. This architecture became the universal engine behind modern AI including GPT-4, Gemini, BERT, and Claude.",
+    "wordCount": 145
+  },
+  "flowchart": {
+    "mermaidCode": "flowchart TD\n    In[\"Input Sequence: Tokenized Text\"] --> PE[\"Positional Encoding + Token Embedding\"]\n    PE --> Enc[\"Transformer Encoder: Multi-Head Self-Attention + Add & Norm + Feed Forward\"]\n    Enc --> CrossAttn[\"Cross-Attention Layer\"]\n    TargetIn[\"Target Shifted Right Sequence\"] --> DecPE[\"Target Positional Encoding + Embedding\"]\n    DecPE --> MaskedAttn[\"Masked Multi-Head Attention\"]\n    MaskedAttn --> CrossAttn\n    CrossAttn --> DecFFN[\"Decoder Feed Forward + LayerNorm\"]\n    DecFFN --> Linear[\"Linear Projection Layer\"]\n    Linear --> Softmax[\"Softmax Probability Generator\"]\n    Softmax --> Out[\"Predicted Target Tokens: Translation\"]",
+    "summary": "End-to-end Transformer pipeline: token embeddings with positional encodings pass through stacked self-attention encoder and cross-attention decoder blocks to generate output token probabilities."
+  },
+  "projectIdeas": [
+    {
+      "title": "Distil-Attention: Cache-Quantized Attention for Raspberry Pi",
+      "extensionOrImprovement": "Implement dynamic 4-bit INT4 quantization and a sliding-window KV cache pruning heuristic for the multi-head attention matrix to enable local edge CPU inference on low-power single board computers.",
+      "expectedMetric": "Reduce peak RAM consumption by >55% and achieve >18 tokens/second autoregressive generation on an ARM Cortex-A76 CPU.",
+      "recommendedTechStack": [
+        "Python",
+        "PyTorch",
+        "llama.cpp / GGML",
+        "FastAPI",
+        "Raspberry Pi 5"
+      ],
+      "difficultyLevel": "Moderate",
+      "milestones": [
+        "Benchmark memory footprint of baseline scaled dot-product attention in PyTorch.",
+        "Implement asymmetric 4-bit quantization kernel for Keys and Values.",
+        "Deploy lightweight inference REST API on a Raspberry Pi 5.",
+        "Evaluate BLEU score retention vs memory reduction on WMT test set."
+      ]
+    },
+    {
+      "title": "Interactive Real-Time Attention Weight Visualizer Web App",
+      "extensionOrImprovement": "Build an interactive educational web dashboard that visualizes multi-head attention heatmaps and token-to-token semantic flows in real-time as users type sentences, highlighting syntactic relationships (e.g., subject-verb-object alignments).",
+      "expectedMetric": "Sub-80ms rendering latency for attention matrices across 12 heads with interactive SVG/Canvas visualization.",
+      "recommendedTechStack": [
+        "React",
+        "TypeScript",
+        "Tailwind CSS",
+        "D3.js",
+        "ONNX Runtime Web"
+      ],
+      "difficultyLevel": "Beginner-Friendly",
+      "milestones": [
+        "Export a compact BERT or MiniLM model to ONNX web runtime.",
+        "Extract raw attention matrices from intermediate encoder layers.",
+        "Render interactive D3 heatmaps with hover tooltips and token cross-linking.",
+        "Add guided tutorial mode explaining Query, Key, and Value vectors to students."
+      ]
+    },
+    {
+      "title": "Domain-Adapted Transformer for Code Vulnerability Detection",
+      "extensionOrImprovement": "Adapt the Transformer encoder architecture with syntax-aware AST (Abstract Syntax Tree) position biases to identify common CWE vulnerabilities (SQL injections, buffer overflows) in Python/C++ code snippets.",
+      "expectedMetric": "Achieve >88% F1-score on the Big-Vul security benchmark while maintaining under 50MB model weight size.",
+      "recommendedTechStack": [
+        "PyTorch",
+        "Tree-sitter",
+        "Hugging Face Transformers",
+        "Docker",
+        "Streamlit"
+      ],
+      "difficultyLevel": "Advanced",
+      "milestones": [
+        "Parse C/C++ source code into AST node sequences using Tree-sitter.",
+        "Inject tree-depth and sibling distance into the positional encoding matrix.",
+        "Fine-tune an encoder-only model on labeled security vulnerability datasets.",
+        "Build a CLI git pre-commit hook that warns developers about high-risk lines."
+      ]
+    }
+  ]
+}
